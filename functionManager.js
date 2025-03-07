@@ -5,7 +5,7 @@ try{
     const data = await readTasks();
     const tasks = JSON.parse(data);
 
-    tasks.push({name: taskName, done: false});
+    tasks.push({name: taskName, done: false, date: new Date().toISOString()});
     await saveTasks(tasks);
     console.log(`Task added: ${taskName}`);
 }
@@ -22,7 +22,7 @@ try{
 
     console.log(' Your Tasks :');
     tasks.forEach ((task , index) => {
-        console.log(`${index + 1}. ${task.name} - ${task.done ? 'Done' : 'NotDone'} `);
+        console.log(`${index + 1}. ${task.name} - ${task.done ? 'Done' : 'NotDone'}`);
     });
 
 }
@@ -83,4 +83,31 @@ catch (error)
 }
 }
 
-export { addTask, viewTask, markTaskDone, deleteTask, showFilterTasks };
+async function sortTasks(criterion) {
+    try{
+        const data = await readTasks();
+        const tasks = JSON.parse(data);
+        const sortedTasks = [...tasks];
+    switch (criterion) {
+        case 'name':
+            sortedTasks.sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()));
+            break;
+        case 'date':
+            sortedTasks.sort((a, b) => new Date(a.date) - new Date(b.date));
+            break;
+        default:
+            console.log('Invalid criterion');
+            return;
+    }
+    sortedTasks.forEach ((task , index) => {
+        console.log(`${index + 1}. ${task.name} - ${task.done ? 'Done' : 'NotDone'} - ${task.date}`);
+    });
+    
+}
+catch (error)
+{
+    console.error('Error:' , error.message);
+}
+}
+
+export { addTask, viewTask, markTaskDone, deleteTask, showFilterTasks , sortTasks};
